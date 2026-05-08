@@ -24,8 +24,8 @@
 
 /* ── reset ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{font-family:'Inter',sans-serif;background:var(--c);color:var(--n);overflow-x:hidden;}
+html{scroll-behavior:smooth;overflow-x:clip;}
+body{font-family:'Inter',sans-serif;background:var(--c);color:var(--n);overflow-x:clip;max-width:100vw;}
 img{display:block;max-width:100%;}
 
 /* ── noise texture ── */
@@ -92,6 +92,7 @@ nav .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--y);animatio
   align-items:center;gap:0;
   padding:140px 0 100px;
   overflow:hidden;position:relative;
+  max-width:100%;
 }
 .hero-bg-grid{
   position:absolute;inset:0;
@@ -253,7 +254,7 @@ nav .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--y);animatio
 /* ────────────────────────
    2. MANIFESTO
 ──────────────────────── */
-#manifesto{padding:96px 0;background:var(--c);position:relative;}
+#manifesto{padding:96px 0;background:var(--c);position:relative;overflow:hidden;}
 .manifesto-top{
   display:grid;grid-template-columns:1fr 1fr;
   gap:72px;align-items:center;
@@ -324,7 +325,7 @@ nav .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--y);animatio
 /* ────────────────────────
    3. DIAGNÓSTICO
 ──────────────────────── */
-#diagnostico{background:#fff;padding:88px 0;}
+#diagnostico{background:#fff;padding:88px 0;overflow:hidden;}
 #diagnostico .label-tag{color:var(--g);}
 #diagnostico h2{
   font-family:'Lora',serif;font-weight:400;font-style:italic;
@@ -516,7 +517,7 @@ nav .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--y);animatio
 /* ────────────────────────
    6. COMPARAÇÃO
 ──────────────────────── */
-#comparacao{background:var(--c);padding:88px 0;}
+#comparacao{background:var(--c);padding:88px 0;overflow:hidden;}
 #comparacao .label-tag{color:var(--g);}
 #comparacao h2{
   font-family:'Lora',serif;font-weight:400;
@@ -619,7 +620,7 @@ nav .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--y);animatio
 /* ────────────────────────
    8. COMPARAÇÃO EXPANDIDA
 ──────────────────────── */
-#sistema{background:var(--c);padding:88px 0;}
+#sistema{background:var(--c);padding:88px 0;overflow:hidden;}
 #sistema .label-tag{color:var(--g);}
 #sistema h2{
   font-family:'Lora',serif;font-weight:400;
@@ -674,7 +675,7 @@ nav .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--y);animatio
 /* ────────────────────────
    9. UNIMONEY
 ──────────────────────── */
-#unimoney{background:#080c12;padding:88px 0;overflow:visible;}
+#unimoney{background:#080c12;padding:88px 0;overflow:hidden;}
 #unimoney .label-tag{color:var(--y);}
 /* hero row */
 .uni-hero{
@@ -697,7 +698,7 @@ nav .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--y);animatio
 .card-stage{
   position:relative;width:100%;height:560px;
   display:flex;justify-content:center;align-items:center;
-  overflow:visible;
+  overflow:hidden;
 }
 .card-glow-ring{
   position:absolute;width:420px;height:420px;border-radius:50%;
