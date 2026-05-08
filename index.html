@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unicâmbio — O Site que Merece</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,700;0,800;1,300;1,700&display=swap" rel="stylesheet">
+<style>
+/* ── tokens ── */
+:root{
+  --y:#FFD100;
+  --n:#0A1628;
+  --nb:#0D1F38;
+  --c:#F7F6F2;
+  --d:#3D3D55;
+  --g:#B8902E;
+  --ln:#E2E0D8;
+  --r:6px;
+}
+
+/* ── reset ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--c);color:var(--n);overflow-x:hidden;}
+img{display:block;max-width:100%;}
+
+/* ── noise texture ── */
+.grain{position:relative;}
+.grain::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size:180px 180px;
+  opacity:.035;mix-blend-mode:overlay;
+}
+
+/* ── progress ── */
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--y);width:0%;z-index:9999;transition:width .08s linear;}
+
+/* ── nav ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 80px;
+  transition:background .5s,padding .4s,backdrop-filter .5s;
+}
+nav.scrolled{
+  background:rgba(10,22,40,.88);
+  backdrop-filter:blur(20px);
+  padding:14px 80px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+nav .logo{overflow:hidden;height:48px;width:182px;display:block;flex-shrink:0;}
+nav .logo img{height:182px;width:auto;display:block;margin-top:-67px;}
+nav .nav-right{display:flex;align-items:center;gap:32px;}
+nav .nav-tag{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.4);
+}
+nav .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--y);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ── containers ── */
+.container{width:92%;max-width:1440px;margin:0 auto;padding:0 48px;}
+.container-wide{width:96%;max-width:1600px;margin:0 auto;padding:0 48px;}
+
+/* ── section label ── */
+.label-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.2em;text-transform:uppercase;
+  margin-bottom:24px;
+}
+.label-tag::before{content:'';width:20px;height:1px;background:currentColor;opacity:.6;}
+
+/* ── reveal ── */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);}
+.reveal.on{opacity:1;transform:none;}
+.d1{transition-delay:.1s;}.d2{transition-delay:.2s;}
+.d3{transition-delay:.3s;}.d4{transition-delay:.4s;}
+.d5{transition-delay:.5s;}
+
+/* ────────────────────────
+   1. HERO
+──────────────────────── */
+#hero{
+  min-height:100vh;background:var(--n);
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:0;
+  padding:140px 0 100px;
+  overflow:hidden;position:relative;
+}
+.hero-bg-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,209,0,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,209,0,.03) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 100% 100% at 30% 50%,black 0%,transparent 100%);
+}
+.hero-glow{
+  position:absolute;top:-100px;right:0;
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,209,0,.1) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-glow-2{
+  position:absolute;bottom:-200px;left:-100px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,209,0,.04) 0%,transparent 65%);
+  pointer-events:none;
+}
+.hero-left{
+  position:relative;z-index:2;
+  padding-left:64px;
+  display:flex;flex-direction:column;
+  justify-content:center;
+}
+.hero-right{
+  position:relative;z-index:2;
+  padding-right:48px;
+  display:flex;align-items:center;justify-content:center;
+}
+.hero-kicker{
+  display:flex;align-items:center;gap:12px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.28em;text-transform:uppercase;color:var(--y);
+  margin-bottom:36px;
+}
+.hero-kicker span{width:40px;height:1px;background:var(--y);}
+#hero h1{
+  font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;
+  font-size:clamp(52px,7vw,110px);line-height:.96;
+  color:#fff;margin-bottom:40px;
+  letter-spacing:-.04em;
+}
+#hero h1 em{color:var(--y);font-style:italic;font-weight:300;}
+.hero-desc{
+  font-size:15px;font-weight:300;color:rgba(255,255,255,.45);
+  max-width:500px;line-height:1.85;margin-bottom:48px;
+}
+.hero-stats{
+  display:flex;gap:0;
+  border-top:1px solid rgba(255,255,255,.07);
+  padding-top:36px;
+}
+.hero-stat{
+  flex:1;padding-right:32px;
+  border-right:1px solid rgba(255,255,255,.07);
+  margin-right:32px;
+}
+.hero-stat:last-child{border-right:none;margin-right:0;padding-right:0;}
+.hero-stat .n{
+  font-family:'Lora',serif;font-size:40px;font-weight:400;color:#fff;
+  line-height:1;margin-bottom:6px;letter-spacing:-.02em;
+}
+.hero-stat .l{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3);
+}
+/* browser preview */
+.hero-preview-wrap{
+  width:100%;
+  transform:perspective(1400px) rotateY(-12deg) rotateX(4deg);
+  transition:transform .8s cubic-bezier(.16,1,.3,1);
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+  transform-style:preserve-3d;
+  animation:heroFloat 9s ease-in-out 0.5s infinite;
+}
+.hero-preview-wrap:hover{
+  transform:perspective(1400px) rotateY(-5deg) rotateX(2deg);
+  animation:none;
+}
+.hero-preview-frame{
+  border-radius:14px;overflow:hidden;
+  border:1px solid rgba(255,209,0,.2);
+  box-shadow:0 60px 120px rgba(0,0,0,.7),0 0 60px rgba(255,209,0,.06);
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+}
+.hero-preview-frame img{
+  width:100%;display:block;height:auto;
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+}
+@keyframes heroFloat{
+  0%  {transform:perspective(1400px) rotateY(-10deg) rotateX(3deg) translateY(0px)   scale(1);}
+  50% {transform:perspective(1400px) rotateY(-7deg)  rotateX(1deg) translateY(-12px) scale(1.015);}
+  100%{transform:perspective(1400px) rotateY(-10deg) rotateX(3deg) translateY(0px)   scale(1);}
+}
+.hero-preview-bar{
+  background:#0f1a2e;padding:12px 18px;
+  display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.hero-preview-dots{display:flex;gap:7px;}
+.hero-preview-dots span{width:10px;height:10px;border-radius:50%;}
+.hero-preview-dots span:nth-child(1){background:#FF5F57;}
+.hero-preview-dots span:nth-child(2){background:#FEBC2E;}
+.hero-preview-dots span:nth-child(3){background:#28C840;}
+.hero-preview-url{
+  flex:1;background:rgba(255,255,255,.05);border-radius:20px;
+  padding:5px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:rgba(255,255,255,.25);letter-spacing:.04em;
+}
+.hero-preview-frame img{width:100%;display:block;height:auto;}
+.hero-preview-badge{
+  position:absolute;bottom:-20px;right:-20px;
+  background:var(--y);color:var(--n);
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.15em;text-transform:uppercase;font-weight:600;
+  padding:10px 18px;border-radius:100px;
+  box-shadow:0 8px 32px rgba(255,209,0,.3);
+}
+.scroll-cue{
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.scroll-cue .sc-label{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);
+}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(255,209,0,.4),transparent);animation:scrolldown 1.8s ease-in-out infinite;}
+@keyframes scrolldown{0%{transform:scaleY(0);transform-origin:top;}50%{transform:scaleY(1);transform-origin:top;}51%{transform:scaleY(1);transform-origin:bottom;}100%{transform:scaleY(0);transform-origin:bottom;}}
+
+/* ────────────────────────
+   MARQUEE
+──────────────────────── */
+.marquee-strip{
+  background:var(--y);padding:14px 0;overflow:hidden;
+  border-top:none;position:relative;z-index:2;
+}
+.marquee-track{
+  display:flex;width:max-content;
+  animation:marquee 28s linear infinite;
+}
+.marquee-item{
+  display:flex;align-items:center;gap:20px;
+  padding:0 32px;white-space:nowrap;
+}
+.marquee-item span{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--n);
+  font-weight:500;
+}
+.marquee-item .dot{width:5px;height:5px;border-radius:50%;background:rgba(10,22,40,.3);}
+@keyframes marquee{to{transform:translateX(-50%);}}
+
+/* ────────────────────────
+   2. MANIFESTO
+──────────────────────── */
+#manifesto{padding:96px 0;background:var(--c);position:relative;}
+.manifesto-top{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:72px;align-items:center;
+  margin-bottom:64px;
+}
+.manifesto-text-col{
+  display:flex;flex-direction:column;gap:24px;
+}
+.manifesto-text-col .label-tag{color:var(--g);}
+
+.manifesto-img-wrap{
+  position:relative;border-radius:16px;overflow:hidden;
+  box-shadow:0 40px 100px rgba(10,22,40,.18),0 8px 32px rgba(10,22,40,.1);
+}
+.manifesto-img-wrap::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,209,0,.08) 0%,transparent 60%);
+  pointer-events:none;
+}
+.manifesto-img-wrap img{
+  width:100%;height:420px;object-fit:cover;display:block;
+}
+#manifesto .manifesto-quote-mark{
+  position:absolute;top:80px;right:64px;
+  font-family:'Lora',serif;font-size:300px;font-weight:400;
+  color:var(--n);opacity:.04;line-height:1;pointer-events:none;
+  font-style:italic;
+}
+#manifesto .big{
+  font-family:'Lora',serif;font-weight:400;
+  font-size:clamp(26px,2.4vw,40px);line-height:1.5;
+  color:var(--n);max-width:none;
+}
+#manifesto .big em{font-style:italic;color:var(--g);}
+#manifesto .big strong{font-weight:600;}
+.manifesto-divider{
+  width:100%;height:1px;background:var(--ln);
+  margin:48px 0;position:relative;
+}
+.manifesto-divider::after{
+  content:'';position:absolute;left:0;top:-1px;
+  width:80px;height:3px;background:var(--y);
+}
+.manifesto-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;}
+.m-stat{
+  padding:48px 48px 48px 0;border-right:1px solid var(--ln);
+}
+.m-stat:last-child{border-right:none;padding-right:0;padding-left:48px;}
+.m-stat:nth-child(2),.m-stat:nth-child(3){padding:48px;}
+.m-stat .n{
+  font-family:'Lora',serif;font-size:72px;font-weight:400;
+  color:var(--n);line-height:1;margin-bottom:12px;letter-spacing:-.02em;
+}
+.m-stat .l{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--g);margin-bottom:12px;
+}
+.m-stat .d{font-size:18px;color:var(--d);line-height:1.7;}
+.m-stat-bar{
+  width:100%;height:3px;background:var(--ln);border-radius:2px;
+  margin:20px 0 24px;overflow:hidden;
+}
+.m-stat-bar-fill{
+  height:100%;width:0%;background:var(--y);border-radius:2px;
+  transition:width 1.4s cubic-bezier(.16,1,.3,1);
+}
+
+/* ────────────────────────
+   3. DIAGNÓSTICO
+──────────────────────── */
+#diagnostico{background:#fff;padding:88px 0;}
+#diagnostico .label-tag{color:var(--g);}
+#diagnostico h2{
+  font-family:'Lora',serif;font-weight:400;font-style:italic;
+  font-size:clamp(44px,4.5vw,68px);color:var(--n);
+  margin-bottom:48px;max-width:820px;line-height:1.15;
+}
+.diag-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.diag-sticky{position:sticky;top:100px;}
+.browser-frame{
+  border-radius:12px;overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,.12),0 8px 24px rgba(0,0,0,.08);
+  border:1px solid var(--ln);
+}
+.browser-bar{
+  background:#F4F3F1;padding:11px 16px;
+  display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--ln);
+}
+.browser-dots{display:flex;gap:7px;}
+.browser-dots span{width:10px;height:10px;border-radius:50%;}
+.browser-dots span:nth-child(1){background:#FF5F57;}
+.browser-dots span:nth-child(2){background:#FEBC2E;}
+.browser-dots span:nth-child(3){background:#28C840;}
+.browser-url{
+  flex:1;background:#fff;border-radius:20px;
+  padding:5px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:#999;border:1px solid rgba(0,0,0,.08);
+}
+.browser-img{overflow:hidden;max-height:340px;}
+.browser-img img{width:100%;display:block;height:auto;}
+.diag-verdict{
+  margin-top:20px;padding:36px 40px;border-radius:12px;
+  background:var(--n);position:relative;overflow:hidden;
+}
+.diag-verdict::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,209,0,.07) 0%,transparent 60%);
+  pointer-events:none;
+}
+.diag-verdict::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--y),transparent);
+}
+.diag-verdict .v-label{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--y);
+  margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.diag-verdict .v-label::after{
+  content:'';flex:1;height:1px;background:rgba(255,255,255,.08);
+}
+.diag-verdict .v-quote{
+  font-family:'Lora',serif;font-size:22px;font-weight:400;font-style:italic;
+  color:#fff;line-height:1.45;margin-bottom:20px;
+}
+.diag-verdict .v-quote em{color:var(--y);font-style:normal;}
+.diag-verdict .v-sub{
+  font-size:14px;color:rgba(255,255,255,.4);line-height:1.7;
+  border-top:1px solid rgba(255,255,255,.07);padding-top:16px;
+}
+.diag-problems{display:flex;flex-direction:column;gap:2px;}
+.prob-card{
+  padding:28px 32px;border:1px solid transparent;
+  border-radius:var(--r);background:var(--c);
+  transition:border-color .25s,background .25s,transform .25s;
+  cursor:default;
+}
+.prob-card:hover{border-color:var(--ln);background:#fff;transform:translateX(6px);}
+.prob-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px;}
+.prob-num{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.12em;color:var(--y);
+  background:var(--n);padding:3px 8px;border-radius:3px;
+  flex-shrink:0;margin-top:2px;
+}
+.prob-card h3{font-size:20px;font-weight:600;color:var(--n);}
+.prob-card p{font-size:18px;color:var(--d);line-height:1.75;}
+
+/* ────────────────────────
+   4. POSICIONAMENTO
+──────────────────────── */
+#posicionamento{background:var(--n);padding:112px 0;overflow:hidden;}
+#posicionamento .label-tag{color:var(--y);}
+#posicionamento h2{
+  font-family:'Lora',serif;font-weight:400;font-style:italic;
+  font-size:clamp(48px,5vw,80px);color:#fff;
+  margin-bottom:64px;line-height:1.05;letter-spacing:-.02em;
+  max-width:800px;
+}
+#posicionamento h2 em{color:var(--y);font-style:normal;}
+.pos-grid{
+  display:grid;
+  grid-template-columns:1fr 1.8fr 1fr;
+  gap:16px;align-items:stretch;
+}
+/* competitor cards */
+.pos-card{
+  padding:48px 40px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.02);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.pos-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:rgba(255,255,255,.06);
+}
+.pos-cat{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.2);margin-bottom:20px;
+}
+.pos-card h3{
+  font-family:'Lora',serif;font-weight:400;font-size:28px;
+  color:rgba(255,255,255,.6);margin-bottom:32px;line-height:1.1;
+}
+.pos-traits{list-style:none;display:flex;flex-direction:column;flex:1;}
+.pos-traits li{
+  font-size:15px;color:rgba(255,255,255,.3);
+  padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex;align-items:center;gap:12px;
+}
+.pos-traits li::before{
+  content:'';width:4px;height:4px;border-radius:50%;
+  background:rgba(255,255,255,.15);flex-shrink:0;
+}
+.pos-badge{
+  margin-top:32px;padding:12px 18px;border-radius:6px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;font-weight:500;
+  background:rgba(255,255,255,.04);color:rgba(255,255,255,.25);
+  text-align:center;
+}
+/* Unicâmbio highlight — dominant */
+.pos-card.highlight{
+  background:var(--y);border-color:var(--y);
+  padding:56px 48px;
+  box-shadow:0 0 0 1px rgba(255,209,0,.4),0 40px 100px rgba(255,209,0,.2);
+}
+.pos-card.highlight::before{display:none;}
+.pos-card.highlight .pos-cat{
+  color:rgba(10,22,40,.5);font-size:11px;
+}
+.pos-card.highlight h3{
+  font-family:'Lora',serif;font-weight:700;
+  font-size:clamp(48px,4vw,64px);color:var(--n);
+  margin-bottom:8px;letter-spacing:-.02em;
+}
+.pos-card.highlight .pos-tagline{
+  font-size:17px;color:rgba(10,22,40,.55);margin-bottom:36px;
+  font-style:italic;
+}
+.pos-card.highlight .pos-traits li{
+  font-size:17px;color:rgba(10,22,40,.75);
+  border-color:rgba(10,22,40,.1);font-weight:500;
+}
+.pos-card.highlight .pos-traits li::before{background:rgba(10,22,40,.3);}
+.pos-card.highlight .pos-badge{
+  background:var(--n);color:var(--y);
+  font-size:12px;letter-spacing:.16em;
+  padding:16px 24px;margin-top:36px;
+  box-shadow:0 8px 32px rgba(0,0,0,.2);
+}
+
+/* ────────────────────────
+   5. REVEAL
+──────────────────────── */
+#reveal-novo{
+  position:relative;height:100vh;overflow:hidden;
+  display:flex;align-items:flex-end;padding-bottom:100px;
+}
+#reveal-novo .bg{position:absolute;inset:0;}
+#reveal-novo .bg img{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  object-fit:cover;object-position:top;
+}
+#reveal-novo .overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(10,22,40,.95) 0%,rgba(10,22,40,.4) 55%,rgba(10,22,40,.1) 100%);
+}
+#reveal-novo .content{position:relative;z-index:2;}
+#reveal-novo .content .label-tag{color:var(--y);}
+#reveal-novo .content h2{
+  font-family:'Lora',serif;font-weight:400;font-style:italic;
+  font-size:clamp(56px,7vw,104px);color:#fff;
+  max-width:900px;line-height:1;letter-spacing:-.02em;
+  margin-top:16px;
+}
+
+/* ────────────────────────
+   6. COMPARAÇÃO
+──────────────────────── */
+#comparacao{background:var(--c);padding:88px 0;}
+#comparacao .label-tag{color:var(--g);}
+#comparacao h2{
+  font-family:'Lora',serif;font-weight:400;
+  font-size:clamp(38px,3.8vw,60px);color:var(--n);margin-bottom:48px;line-height:1.15;
+}
+.cmp-cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;}
+.cmp-col-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.18em;text-transform:uppercase;
+  padding:7px 14px;border-radius:100px;margin-bottom:20px;
+}
+.cmp-col-pill.old{background:rgba(0,0,0,.06);color:var(--d);}
+.cmp-col-pill.novo{background:var(--y);color:var(--n);}
+.cmp-col-pill .dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5;}
+.cmp-browser{
+  border-radius:12px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.1);border:1px solid var(--ln);
+}
+.cmp-browser.novo-browser{
+  box-shadow:0 0 0 2px var(--y),0 20px 60px rgba(255,209,0,.15);
+  border-color:var(--y);
+}
+.cmp-bullets{list-style:none;margin-top:20px;display:flex;flex-direction:column;}
+.cmp-bullets li{
+  display:flex;align-items:flex-start;gap:12px;
+  font-size:15px;line-height:1.65;color:var(--d);
+  padding:12px 0;border-bottom:1px solid var(--ln);
+}
+.cmp-bullets li:last-child{border-bottom:none;}
+.ico{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;margin-top:1px;font-weight:700;
+}
+.cmp-bullets.old .ico{background:rgba(0,0,0,.06);color:#999;}
+.cmp-bullets.novo .ico{background:var(--y);color:var(--n);}
+
+/* ────────────────────────
+   7. MOBILE
+──────────────────────── */
+#mobile{background:var(--n);padding:88px 0;overflow:hidden;}
+#mobile .label-tag{color:var(--y);}
+#mobile h2{
+  font-family:'Lora',serif;font-weight:400;
+  font-size:clamp(44px,4.5vw,68px);color:#fff;
+  margin-bottom:48px;line-height:1.1;letter-spacing:-.01em;
+}
+.mob-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.mob-phones{
+  display:flex;gap:20px;align-items:flex-start;
+  position:relative;
+}
+.mob-phones::before{
+  content:'';position:absolute;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  width:1px;height:80%;background:rgba(255,255,255,.08);
+}
+.phone-wrap{flex:1;}
+.phone-pill{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.15em;text-transform:uppercase;
+  text-align:center;margin-bottom:12px;padding:5px 12px;
+  border-radius:100px;display:inline-block;
+  width:100%;
+}
+.phone-pill.old{background:rgba(255,255,255,.05);color:rgba(255,255,255,.3);}
+.phone-pill.novo{background:var(--y);color:var(--n);}
+.phone-frame{
+  border-radius:20px;overflow:hidden;
+  max-height:480px;
+}
+.phone-frame.old-f{
+  box-shadow:0 16px 48px rgba(0,0,0,.5);
+  border:5px solid rgba(255,255,255,.08);
+}
+.phone-frame.novo-f{
+  box-shadow:0 0 0 2px var(--y),0 20px 60px rgba(255,209,0,.2);
+  border:5px solid var(--y);
+}
+.phone-frame img{width:100%;display:block;height:auto;}
+.mob-content{display:flex;flex-direction:column;gap:16px;}
+.mob-stat-card{
+  padding:28px 32px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.03);
+  transition:border-color .25s,background .25s;
+}
+.mob-stat-card:hover{border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.06);}
+.mob-stat-card .n{
+  font-family:'Lora',serif;font-size:42px;font-weight:400;
+  color:var(--y);line-height:1;margin-bottom:6px;
+}
+.mob-stat-card .l{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px;
+}
+.mob-stat-card .d{font-size:15px;color:rgba(255,255,255,.45);line-height:1.65;}
+
+/* ────────────────────────
+   8. COMPARAÇÃO EXPANDIDA
+──────────────────────── */
+#sistema{background:var(--c);padding:88px 0;}
+#sistema .label-tag{color:var(--g);}
+#sistema h2{
+  font-family:'Lora',serif;font-weight:400;
+  font-size:clamp(38px,3.8vw,60px);color:var(--n);margin-bottom:12px;line-height:1.15;
+}
+#sistema .sis-sub{
+  font-size:15px;color:var(--d);max-width:520px;line-height:1.75;margin-bottom:40px;
+}
+.cmp-header{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:10px;
+}
+.cmp-header-label{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.18em;text-transform:uppercase;
+  padding:8px 16px;border-radius:4px;text-align:center;display:block;
+}
+.cmp-header-label.old{background:rgba(0,0,0,.05);color:var(--d);}
+.cmp-header-label.novo{background:var(--y);color:var(--n);}
+.cmp-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.cmp-row:last-child{margin-bottom:0;}
+.cmp-shot{border-radius:var(--r);overflow:hidden;border:1px solid var(--ln);max-height:280px;}
+.cmp-shot img{width:100%;display:block;height:auto;}
+.cmp-shot.old-shot{border-color:rgba(0,0,0,.08);}
+.cmp-shot.novo-shot{border-color:var(--y);box-shadow:0 0 0 2px rgba(255,209,0,.25);}
+.cmp-divider{
+  display:flex;align-items:center;gap:20px;margin:48px 0;
+}
+.cmp-divider-line{flex:1;height:1px;background:var(--ln);}
+.cmp-divider-label{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--d);white-space:nowrap;
+  padding:6px 16px;border:1px solid var(--ln);border-radius:100px;
+}
+.cmp-page-label{
+  display:flex;align-items:center;gap:20px;
+  font-family:'Inter',sans-serif;font-size:15px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--n);
+  margin:72px 0 16px;padding:18px 24px;
+  background:var(--c);border:1px solid var(--ln);border-left:3px solid var(--y);
+  border-radius:var(--r);
+}
+.cmp-page-label::after{display:none;}
+.cmp-phone-pair{display:flex;gap:12px;}
+.cmp-phone{
+  flex:1;border-radius:16px;overflow:hidden;
+  max-height:440px;
+}
+.cmp-phone.old-phone{border:2px solid rgba(0,0,0,.08);box-shadow:0 8px 24px rgba(0,0,0,.08);}
+.cmp-phone.novo-phone{border:2px solid var(--y);box-shadow:0 0 0 3px rgba(255,209,0,.15),0 12px 32px rgba(0,0,0,.1);}
+.cmp-phone img{width:100%;display:block;height:auto;}
+
+/* ────────────────────────
+   9. UNIMONEY
+──────────────────────── */
+#unimoney{background:#080c12;padding:88px 0;overflow:visible;}
+#unimoney .label-tag{color:var(--y);}
+/* hero row */
+.uni-hero{
+  display:grid;grid-template-columns:1fr 1fr;gap:64px;
+  align-items:center;margin-bottom:56px;
+}
+.uni-hero-text{}
+.uni-logo{display:none;}
+.uni-hero-text h2{
+  font-family:'Lora',serif;font-weight:400;font-style:italic;
+  font-size:clamp(44px,4.5vw,72px);color:#fff;margin-bottom:24px;line-height:1.08;
+  letter-spacing:-.02em;
+}
+.uni-hero-text h2 em{color:var(--y);font-style:normal;}
+.uni-hero-text p{font-size:18px;color:rgba(255,255,255,.5);line-height:1.8;max-width:520px;}
+.uni-hero-visual{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  overflow:visible;
+}
+.card-stage{
+  position:relative;width:100%;height:560px;
+  display:flex;justify-content:center;align-items:center;
+  overflow:visible;
+}
+.card-glow-ring{
+  position:absolute;width:420px;height:420px;border-radius:50%;
+  left:50%;top:50%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(255,208,0,.10) 0%,rgba(255,208,0,.03) 40%,transparent 70%);
+  animation:gr 4s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes gr{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.22);}}
+.coin{position:absolute;width:38px;height:38px;border-radius:50%;background:conic-gradient(from 0deg,#ffe566,#ffd700,#c9a500,#ffd700,#ffe566);box-shadow:0 4px 16px rgba(255,209,0,.4),inset 0 1px 0 rgba(255,255,255,.4);display:grid;place-items:center;font-size:13px;font-weight:900;color:rgba(0,0,0,.45);animation:coinfl 3.5s ease-in-out infinite;}
+@keyframes coinfl{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-14px) rotate(20deg);}}
+.coin::after{content:"€";position:absolute;}
+.coin-1{top:10%;left:5%;animation-delay:0s;width:34px;height:34px;}
+.coin-2{top:5%;right:12%;animation-delay:.8s;width:44px;height:44px;}
+.coin-3{bottom:12%;left:10%;animation-delay:1.4s;width:30px;height:30px;}
+.coin-4{bottom:8%;right:8%;animation-delay:.4s;width:40px;height:40px;}
+.coin-5{top:40%;left:1%;animation-delay:1.9s;width:26px;height:26px;}
+.card-deck{position:relative;width:480px;height:304px;}
+.uni-product-svg{
+  width:100%;max-width:520px;height:auto;
+  position:relative;z-index:1;
+  filter:drop-shadow(0 32px 64px rgba(255,209,0,.15));
+}
+
+/* ── card fan (from index.html) ── */
+.uni-card{
+  position:absolute;inset:0;
+  border-radius:16px;
+  background:transparent;
+  overflow:visible;
+  box-shadow:none;
+}
+.uni-card img{display:none;}
+.uni-card .card-fallback{
+  display:none;width:100%;height:100%;
+  border-radius:16px;
+  background:#111;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 24px 60px rgba(0,0,0,.8),0 0 0 1px rgba(255,209,0,.1);
+}
+.uni-card .card-fallback .fb-u{
+  position:absolute;
+  right:-8px;top:-55px;
+  width:210px;height:270px;
+  border:54px solid #FFD100;
+  border-top:none;
+  border-radius:0 0 130px 130px;
+  pointer-events:none;
+}
+.uni-card .card-fallback .fb-logo{
+  position:absolute;top:18px;left:20px;
+  display:flex;align-items:center;gap:7px;z-index:2;
+}
+.uni-card .card-fallback .fb-logo .fb-mark{
+  width:26px;height:26px;border-radius:6px;
+  background:#FFD100;display:grid;place-items:center;
+  color:#000;font-weight:900;font-size:12px;
+  font-family:'Inter',sans-serif;flex-shrink:0;
+}
+.uni-card .card-fallback .fb-logo .fb-name-text{
+  color:rgba(255,255,255,.9);font-size:13px;font-weight:600;
+  font-family:'Inter',sans-serif;
+}
+.uni-card .card-fallback .fb-nfc{
+  position:absolute;top:18px;right:18px;
+  color:rgba(255,255,255,.8);z-index:2;
+}
+.uni-card .card-fallback .fb-chip{
+  position:absolute;left:22px;top:72px;z-index:2;
+  width:38px;height:29px;border-radius:5px;
+  background:linear-gradient(135deg,#bfa040 0%,#e8d070 40%,#bfa040 70%,#d4b850 100%);
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.3),0 1px 4px rgba(0,0,0,.4);
+}
+.uni-card .card-fallback .fb-chip::before{
+  content:"";position:absolute;inset:4px;
+  border:1px solid rgba(0,0,0,.2);border-radius:3px;
+}
+.uni-card .card-fallback .fb-visa{
+  position:absolute;bottom:18px;right:20px;z-index:2;
+  font-family:'Inter',sans-serif;font-size:18px;font-weight:900;
+  color:#fff;letter-spacing:.02em;font-style:italic;
+}
+.uni-card img{display:none;}
+.uni-card .card-fallback{display:block;}
+.c-glare{position:absolute;inset:0;border-radius:18px;background:linear-gradient(125deg,transparent 20%,rgba(255,208,0,.1) 45%,rgba(255,255,255,.08) 50%,transparent 75%);opacity:0;animation:glare 6s ease-in-out 1s infinite;pointer-events:none;}
+@keyframes glare{0%{opacity:0;transform:translateX(-100%);}30%{opacity:1;}70%{opacity:1;}100%{opacity:0;transform:translateX(60%);}}
+/* screenshot gallery */
+.uni-gallery-label{
+  display:flex;align-items:center;gap:16px;margin-bottom:24px;
+}
+.uni-gallery-label span{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.2em;text-transform:uppercase;
+  padding:6px 14px;border-radius:4px;
+  background:var(--y);color:var(--n);
+}
+.uni-gallery-label .gl-line{flex:1;height:1px;background:rgba(255,255,255,.08);}
+.uni-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr;
+  grid-template-rows:auto auto;
+  gap:12px;
+  margin-bottom:40px;
+}
+.uni-grid-item{
+  border-radius:10px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);
+  max-height:320px;
+}
+.uni-grid-item.featured{
+  grid-row:span 2;
+  border-color:var(--y);
+  box-shadow:0 0 0 2px rgba(255,209,0,.2),0 20px 60px rgba(0,0,0,.5);
+  max-height:none;
+}
+.uni-grid-item img{width:100%;display:block;height:auto;}
+/* comparison strip */
+.uni-compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.uni-cmp-col{}
+.uni-cmp-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.18em;text-transform:uppercase;
+  padding:6px 14px;border-radius:100px;margin-bottom:12px;
+}
+.uni-cmp-pill.old{background:rgba(255,255,255,.06);color:rgba(255,255,255,.4);}
+.uni-cmp-pill.novo{background:var(--y);color:var(--n);}
+.uni-cmp-frame{
+  border-radius:10px;overflow:hidden;max-height:300px;
+}
+.uni-cmp-frame.old-f{border:1px solid rgba(255,255,255,.08);}
+.uni-cmp-frame.novo-f{
+  border:2px solid var(--y);
+  box-shadow:0 0 0 3px rgba(255,209,0,.12);
+}
+.uni-cmp-frame img{width:100%;display:block;height:auto;}
+.uni-caption{
+  margin-top:10px;font-size:11px;line-height:1.65;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.02em;
+}
+.uni-cmp-col.old-col .uni-caption{color:rgba(255,255,255,.2);}
+.uni-cmp-col.novo-col .uni-caption{color:rgba(255,255,255,.45);}
+@media(max-width:960px){
+  .uni-hero,.uni-grid,.uni-compare{grid-template-columns:1fr;}
+  .uni-grid-item.featured{grid-row:span 1;}
+}
+
+/* ────────────────────────
+   10. IMPACTO
+──────────────────────── */
+#impacto{background:var(--c);padding:88px 0;position:relative;overflow:hidden;}
+#impacto::before{
+  content:'';position:absolute;bottom:-200px;right:-200px;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(184,144,46,.07) 0%,transparent 70%);
+}
+#impacto .label-tag{color:var(--g);}
+#impacto h2{
+  font-family:'Lora',serif;font-weight:400;font-style:italic;
+  font-size:clamp(38px,3.8vw,60px);color:var(--n);margin-bottom:48px;line-height:1.15;
+}
+.impact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:2px;}
+.impact-card{
+  padding:56px 48px;border:1px solid var(--ln);
+  background:#fff;transition:background .3s;
+  position:relative;overflow:hidden;
+}
+.impact-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:var(--y);transform:scaleX(0);transform-origin:left;
+  transition:transform .4s cubic-bezier(.16,1,.3,1);
+}
+.impact-card:hover::after{transform:scaleX(1);}
+.impact-card:hover{background:var(--c);}
+.impact-metric{
+  font-family:'Lora',serif;font-weight:400;
+  font-size:clamp(64px,7vw,104px);color:var(--n);
+  line-height:1;margin-bottom:20px;letter-spacing:-.02em;
+}
+.impact-label{
+  font-family:'JetBrains Mono',monospace;font-size:13px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--g);margin-bottom:20px;
+}
+.impact-card p{font-size:19px;color:var(--d);line-height:1.75;}
+.impact-note{
+  padding:48px;background:var(--n);border-radius:12px;margin-top:40px;
+  position:relative;overflow:hidden;
+}
+.impact-note::before{
+  content:'\201C';
+  position:absolute;top:-20px;left:32px;
+  font-family:'Lora',serif;font-size:200px;font-weight:400;font-style:italic;
+  color:rgba(255,255,255,.04);line-height:1;pointer-events:none;
+}
+.impact-note p{
+  font-family:'Lora',serif;font-weight:400;font-style:italic;
+  font-size:clamp(20px,2.5vw,32px);color:rgba(255,255,255,.7);line-height:1.4;
+  position:relative;z-index:1;
+}
+.impact-note p em{color:var(--y);font-style:normal;}
+
+/* ────────────────────────
+   11. PEDIDO
+──────────────────────── */
+#pedido{
+  background:var(--n);
+  padding:120px 0 100px;position:relative;overflow:hidden;
+}
+.pedido-grid-bg{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,209,0,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,209,0,.03) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.pedido-glow{
+  position:absolute;bottom:-200px;left:-100px;
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,209,0,.07) 0%,transparent 65%);
+}
+#pedido .label-tag{color:var(--y);position:relative;z-index:1;}
+#pedido h2{
+  font-family:'Lora',serif;font-weight:400;
+  font-size:clamp(48px,8vw,112px);color:#fff;line-height:.95;
+  max-width:900px;margin:24px 0 40px;letter-spacing:-.02em;
+  position:relative;z-index:1;
+}
+#pedido h2 em{color:var(--y);font-style:italic;}
+#pedido .ped-sub{
+  font-size:19px;color:rgba(255,255,255,.5);max-width:680px;
+  line-height:1.75;margin-bottom:0;position:relative;z-index:1;
+}
+.ped-divider{
+  width:100%;height:1px;background:rgba(255,255,255,.08);
+  margin:64px 0;position:relative;z-index:1;
+}
+.ped-stats{
+  display:flex;gap:64px;flex-wrap:wrap;position:relative;z-index:1;
+}
+.ped-stat .n{
+  font-family:'Lora',serif;font-size:40px;font-weight:400;color:#fff;
+  line-height:1;margin-bottom:6px;
+}
+.ped-stat .l{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);
+}
+.ped-logo{
+  margin-top:80px;display:flex;align-items:center;gap:24px;
+  border-top:1px solid rgba(255,255,255,.07);padding-top:48px;
+  position:relative;z-index:1;
+}
+.ped-logo img{height:60px;opacity:.9;}
+.ped-logo .tagline{
+  font-family:'Lora',serif;font-weight:400;font-style:italic;
+  font-size:18px;color:rgba(255,255,255,.35);
+}
+.ped-cta{
+  margin-top:64px;display:flex;flex-direction:column;
+  align-items:center;gap:16px;position:relative;z-index:1;
+}
+.ped-btn{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:20px 48px;border-radius:999px;
+  background:var(--y);color:#000;
+  font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;
+  font-size:17px;letter-spacing:-.02em;
+  text-decoration:none;
+  transition:transform .25s cubic-bezier(.16,1,.3,1),box-shadow .25s cubic-bezier(.16,1,.3,1),background .2s;
+  box-shadow:0 0 0 0 rgba(255,209,0,0);
+}
+.ped-btn:hover{
+  background:#ffe033;
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:0 20px 60px rgba(255,209,0,.35);
+}
+.ped-btn svg{transition:transform .25s cubic-bezier(.16,1,.3,1);}
+.ped-btn:hover svg{transform:translate(3px,-3px);}
+.ped-btn-sub{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.2);
+}
+
+/* ────────────────────────
+   BATTLEFIELD — competitor confronto
+──────────────────────── */
+#battlefield{
+  background:var(--n);
+  color:#fff;
+  padding:120px 0 100px;
+  position:relative;
+  overflow:hidden;
+}
+.btl-ambient{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:900px;height:600px;
+  background:radial-gradient(ellipse at 50% 50%,rgba(255,209,0,.09),transparent 68%);
+  pointer-events:none;
+}
+#battlefield .label-tag{color:rgba(255,255,255,.25);}
+#battlefield h2{
+  font-family:'Lora',serif;font-weight:400;font-style:italic;
+  font-size:clamp(42px,5vw,80px);color:#fff;line-height:1.05;
+  letter-spacing:-.02em;margin-bottom:20px;max-width:820px;
+}
+#battlefield h2 em{color:var(--y);font-style:normal;}
+.btl-sub{
+  font-size:17px;color:rgba(255,255,255,.38);
+  max-width:680px;line-height:1.72;margin-bottom:72px;
+}
+
+/* ── competitors row ── */
+.btl-competitors{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:20px;
+  margin-bottom:0;
+  position:relative;
+}
+.btl-cmp-wrap{
+  opacity:0.32;
+  filter:grayscale(55%) brightness(.75);
+  transform:scale(.95) translateY(12px);
+  position:relative;
+  transition:opacity .3s,filter .3s;
+}
+.btl-cmp-wrap:hover{opacity:.52;filter:grayscale(30%) brightness(.9);}
+.btl-cmp-label{
+  position:absolute;top:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;
+  z-index:3;padding-top:14px;
+}
+.btl-cmp-label span{
+  background:rgba(0,0,0,.72);
+  border:1px solid rgba(255,255,255,.07);
+  color:rgba(255,255,255,.45);
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.2em;text-transform:uppercase;
+  padding:6px 14px;border-radius:100px;backdrop-filter:blur(8px);
+}
+.btl-cmp-browser{
+  border-radius:10px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.06);
+  background:#111;
+}
+.btl-cmp-browser .browser-bar{
+  background:#1a1a1a;
+  display:flex;align-items:center;gap:8px;
+  padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05);
+}
+.btl-cmp-browser .browser-dots{display:flex;gap:5px;}
+.btl-cmp-browser .browser-dots span{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.12);
+}
+.btl-cmp-browser .browser-url{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:rgba(255,255,255,.2);
+}
+.btl-cmp-browser img{width:100%;display:block;object-fit:cover;object-position:top;max-height:300px;}
+
+/* ── vs divider ── */
+.btl-vs-row{
+  display:flex;align-items:center;gap:0;
+  margin:40px 0;
+  position:relative;z-index:2;
+}
+.btl-vs-line{flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(255,255,255,.08));}
+.btl-vs-line.r{transform:scaleX(-1);}
+.btl-vs-badge{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 28px;
+  border:1px solid rgba(255,209,0,.2);
+  border-radius:100px;
+  background:rgba(255,209,0,.04);
+}
+.btl-vs-badge .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--y);
+  box-shadow:0 0 10px rgba(255,209,0,.6);
+  animation:pulse 2s ease-in-out infinite;
+}
+.btl-vs-badge span{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--y);
+}
+
+/* ── Unicâmbio hero block ── */
+.btl-hero-wrap{
+  position:relative;
+  max-width:880px;
+  margin:0 auto;
+}
+.btl-hero-glow{
+  position:absolute;
+  inset:-60px;
+  background:radial-gradient(ellipse at 50% 50%,rgba(255,209,0,.18),transparent 65%);
+  pointer-events:none;
+  z-index:0;
+}
+.btl-hero-browser{
+  position:relative;z-index:1;
+  border-radius:14px;overflow:hidden;
+  border:2px solid rgba(255,209,0,.35);
+  box-shadow:
+    0 0 0 1px rgba(255,209,0,.1),
+    0 60px 120px rgba(0,0,0,.6),
+    0 0 80px rgba(255,209,0,.08);
+}
+.btl-hero-browser .btl-hero-bar{
+  background:#0d1f38;
+  display:flex;align-items:center;gap:10px;
+  padding:14px 20px;
+  border-bottom:1px solid rgba(255,209,0,.15);
+}
+.btl-hero-browser .btl-hero-bar .browser-dots{display:flex;gap:6px;}
+.btl-hero-browser .btl-hero-bar .browser-dots span{
+  width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.12);
+}
+.btl-hero-browser .btl-hero-bar .btl-hero-url{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:rgba(255,209,0,.6);letter-spacing:.04em;
+}
+.btl-hero-browser img{width:100%;display:block;object-position:top;}
+.btl-crown{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  margin-top:24px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--y);
+  opacity:.7;
+}
+.btl-crown::before,.btl-crown::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(to right,transparent,rgba(255,209,0,.2));
+}
+.btl-crown::after{transform:scaleX(-1);}
+
+/* ── comparison table ── */
+.btl-table-wrap{
+  margin-top:80px;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;
+  overflow:hidden;
+}
+.btl-table{
+  width:100%;border-collapse:collapse;
+}
+.btl-table th{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  padding:20px 28px;text-align:left;
+  background:rgba(255,255,255,.02);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  color:rgba(255,255,255,.25);
+  white-space:nowrap;
+}
+.btl-table th.th-uni{color:var(--y);}
+.btl-table td{
+  padding:22px 28px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:15px;color:rgba(255,255,255,.3);
+  vertical-align:middle;line-height:1.4;
+}
+.btl-table td:first-child{
+  color:rgba(255,255,255,.5);font-weight:500;
+  font-size:14px;
+}
+.btl-table td.td-uni{
+  color:rgba(255,255,255,.88);font-weight:500;
+}
+.btl-table tr:last-child td{border-bottom:none;}
+.btl-table tr:hover td{background:rgba(255,255,255,.02);}
+.ic-yes{color:#4ade80;margin-right:6px;}
+.ic-no{color:rgba(255,255,255,.12);margin-right:6px;}
+.ic-maybe{color:rgba(255,209,0,.4);margin-right:6px;}
+.btl-verdict-row{
+  margin-top:56px;
+  padding:40px 48px;
+  background:rgba(255,209,0,.04);
+  border:1px solid rgba(255,209,0,.15);
+  border-radius:14px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:48px;
+  align-items:center;
+}
+.btl-verdict-row blockquote{
+  font-family:'Lora',serif;font-size:clamp(28px,3vw,44px);font-weight:400;font-style:italic;
+  color:#fff;line-height:1.2;margin:0;letter-spacing:-.01em;
+}
+.btl-verdict-row blockquote em{color:var(--y);font-style:normal;font-weight:600;}
+.btl-verdict-row .btl-logo{
+  height:440px;width:auto;flex-shrink:0;
+}
+
+/* ── responsive ── */
+@media(max-width:960px){
+  .btl-competitors{grid-template-columns:1fr;}
+  .btl-table th:nth-child(3),.btl-table th:nth-child(4),.btl-table th:nth-child(5),
+  .btl-table td:nth-child(3),.btl-table td:nth-child(4),.btl-table td:nth-child(5){display:none;}
+  .btl-verdict-row{grid-template-columns:1fr;}
+}
+
+/* ── responsive ── */
+@media(max-width:960px){
+  nav{padding:16px 24px;}
+  nav.scrolled{padding:12px 24px;}
+  .container,.container-wide{padding:0 24px;}
+  .diag-layout,.cmp-cols,.mob-layout,.uni-shots{grid-template-columns:1fr;}
+  .pos-grid,.impact-grid,.cmp-row,.cmp-header,.manifesto-stats{grid-template-columns:1fr;}
+  .manifesto-top{grid-template-columns:1fr;gap:36px;}
+  .manifesto-img-wrap img{height:280px;}
+  .diag-sticky{position:static;}
+  .m-stat{padding:24px 0 !important;border-right:none !important;border-bottom:1px solid var(--ln);}
+  .m-stat:last-child{border-bottom:none;}
+  .hero-stats{flex-wrap:wrap;gap:24px;}
+  .ped-stats{gap:32px;}
+  .uni-top{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="logo"><img src="img/unicambio_logo_fullhd.png" alt="Unicâmbio"></a>
+  <div class="nav-right">
+    <span class="nav-tag">Apresentação · 2026</span>
+    <div class="nav-dot"></div>
+  </div>
+</nav>
+
+<!-- ── 1. HERO ── -->
+<section id="hero" class="grain">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+
+  <div class="hero-left">
+    <div class="hero-kicker reveal">
+      <span></span>
+      Unicâmbio · Posicionamento Digital
+    </div>
+    <h1 class="reveal d1">
+      Unicâmbio.<br><em>Liderança que<br>agora se vê.</em>
+    </h1>
+    <p class="hero-desc reveal d2">
+      Uma análise honesta de onde estávamos, onde os melhores estão — e onde podemos chegar.
+    </p>
+    <div class="hero-stats reveal d3">
+      <div class="hero-stat">
+        <div class="n">33</div>
+        <div class="l">Anos no mercado</div>
+      </div>
+      <div class="hero-stat">
+        <div class="n">#1</div>
+        <div class="l">Câmbio manual Portugal</div>
+      </div>
+      <div class="hero-stat">
+        <div class="n">2026</div>
+        <div class="l">O momento é agora</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right reveal d2">
+    <div class="hero-preview-wrap">
+      <div class="hero-preview-frame">
+        <div class="hero-preview-bar">
+          <div class="hero-preview-dots"><span></span><span></span><span></span></div>
+          <div class="hero-preview-url">unicambio.pt · 2026</div>
+        </div>
+        <img src="img/PrincipalN1.png" alt="Novo site Unicâmbio">
+      </div>
+      <span class="hero-preview-badge">Novo Site ↗</span>
+    </div>
+  </div>
+
+  <div class="scroll-cue">
+    <div class="scroll-line"></div>
+    <span class="sc-label">Deslize</span>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <div class="marquee-item"><span>33 Anos de Liderança</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>Câmbio Manual nº1 em Portugal</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>Novo Posicionamento Digital</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>Design Premium</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>Mobile-First</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>UniMoney · Cartão de Viagem</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>Experiência de Nível Internacional</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>33 Anos de Liderança</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>Câmbio Manual nº1 em Portugal</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>Novo Posicionamento Digital</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>Design Premium</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>Mobile-First</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>UniMoney · Cartão de Viagem</span><div class="dot"></div></div>
+    <div class="marquee-item"><span>Experiência de Nível Internacional</span><div class="dot"></div></div>
+  </div>
+</div>
+
+<!-- ── 2. MANIFESTO ── -->
+<section id="manifesto">
+  <div class="manifesto-quote-mark">"</div>
+  <div class="container">
+    <div class="manifesto-top">
+      <div class="manifesto-text-col">
+        <div class="label-tag reveal">A nossa história</div>
+        <p class="big reveal d1">
+          A Unicâmbio construiu <em>33 anos de liderança</em>
+          através de pessoas, confiança e presença.
+          O mundo digital tornou-se a primeira porta
+          de entrada para qualquer decisão. <strong>Este é o momento natural de acompanhar essa evolução.</strong>
+        </p>
+      </div>
+      <div class="manifesto-img-wrap reveal d2">
+        <img src="img/familiauni.png" alt="Equipa Unicâmbio" loading="lazy">
+      </div>
+    </div>
+    <div class="manifesto-divider"></div>
+    <div class="manifesto-stats">
+      <div class="m-stat reveal">
+        <div class="l">Decisão no digital</div>
+        <div class="n" data-count="74" data-suffix="%">74%</div>
+        <div class="m-stat-bar"><div class="m-stat-bar-fill" data-pct="74"></div></div>
+        <div class="d">dos consumidores pesquisam e decidem online antes de qualquer contacto humano.</div>
+      </div>
+      <div class="m-stat reveal d1">
+        <div class="l">Primeira impressão</div>
+        <div class="n" data-count="3" data-suffix=" seg">3 seg</div>
+        <div class="m-stat-bar"><div class="m-stat-bar-fill" data-pct="28"></div></div>
+        <div class="d">é o tempo que o utilizador demora a decidir se fica ou abandona o site.</div>
+      </div>
+      <div class="m-stat reveal d2">
+        <div class="l">De reputação</div>
+        <div class="n" data-count="33" data-suffix=" anos">33 anos</div>
+        <div class="m-stat-bar"><div class="m-stat-bar-fill" data-pct="82"></div></div>
+        <div class="d">construídos no mercado — e uma presença digital que agora os reflecte com orgulho.</div>
+      </div>
+      <div class="m-stat reveal d3">
+        <div class="l">Câmbio manual em Portugal</div>
+        <div class="n" data-prefix="#" data-count="1">#1</div>
+        <div class="m-stat-bar"><div class="m-stat-bar-fill" data-pct="100"></div></div>
+        <div class="d">Uma posição de liderança que o novo site torna imediatamente visível e inegável.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 3. DIAGNÓSTICO ── -->
+<section id="diagnostico">
+  <div class="container">
+    <div class="label-tag reveal">Diagnóstico · Site Anterior</div>
+    <h2 class="reveal d1">O que o site anterior<br>deixou de oportunidade<br>por explorar.</h2>
+    <div class="diag-layout">
+      <div class="diag-sticky">
+        <div class="browser-frame reveal">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">unicambio.com.br</div>
+          </div>
+          <div class="browser-img">
+            <img src="img/Antigo1.png" alt="Site antigo Unicâmbio" loading="lazy">
+          </div>
+        </div>
+        <div class="diag-verdict reveal d1">
+          <div class="v-label">Ponto de partida</div>
+          <p class="v-quote">Líderes de mercado merecem uma presença digital que <em>comunique liderança</em> — desde o primeiro segundo.</p>
+          <p class="v-sub">A Unicâmbio tem 33 anos de reputação construída. O novo site é a expressão digital dessa autoridade — tornando visível, ao primeiro olhar, aquilo que a empresa já representa no mercado.</p>
+        </div>
+      </div>
+      <div class="diag-problems">
+        <div class="prob-card reveal">
+          <div class="prob-head">
+            <h3>Identidade visual com espaço para evoluir</h3>
+            <span class="prob-num">01</span>
+          </div>
+          <p>O mercado digital evoluiu rapidamente. Marcas de referência como Revolut e Wise definiram novos padrões estéticos — e existe hoje uma oportunidade clara de posicionar a Unicâmbio nesse mesmo patamar de sofisticação visual.</p>
+        </div>
+        <div class="prob-card reveal d1">
+          <div class="prob-head">
+            <h3>Navegação com potencial de simplificação</h3>
+            <span class="prob-num">02</span>
+          </div>
+          <p>A estrutura de informação do site anterior reflectia uma fase de crescimento da empresa. Com a maturidade actual da Unicâmbio, há oportunidade de criar uma experiência mais guiada, que conduza o utilizador naturalmente até ao momento de contacto.</p>
+        </div>
+        <div class="prob-card reveal d2">
+          <div class="prob-head">
+            <h3>Adaptação mobile como prioridade estratégica</h3>
+            <span class="prob-num">03</span>
+          </div>
+          <p>Com mais de 60% do tráfego a ocorrer em dispositivos móveis, existe uma janela de oportunidade significativa. O novo site foi concebido desde a origem para este contexto — garantindo uma experiência consistente em qualquer ecrã.</p>
+        </div>
+        <div class="prob-card reveal d3">
+          <div class="prob-head">
+            <h3>Marca com muito mais para comunicar</h3>
+            <span class="prob-num">04</span>
+          </div>
+          <p>O amarelo Unicâmbio é um activo de marca com enorme potencial. A tipografia, a paleta e o tom de voz do novo site foram pensados para traduzir, de forma coerente, a personalidade e o posicionamento que a empresa já tem — mas que o site anterior ainda não conseguia transmitir plenamente.</p>
+        </div>
+        <div class="prob-card reveal d4">
+          <div class="prob-head">
+            <h3>Liderança que merece ser mais visível</h3>
+            <span class="prob-num">05</span>
+          </div>
+          <p>Ser a maior casa de câmbio manual de Portugal, com 33 anos de história, é uma conquista extraordinária. O novo site transforma essa credibilidade num argumento imediato e inegável — visível logo no primeiro momento de contacto com o utilizador.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 4. POSICIONAMENTO ── -->
+<section id="posicionamento" class="grain">
+  <div class="container">
+    <div class="label-tag reveal">Análise Competitiva</div>
+    <h2 class="reveal d1">O mercado tem dois extremos.<br>A Unicâmbio é <em>o ponto de chegada.</em></h2>
+    <div class="pos-grid">
+
+      <div class="pos-card reveal">
+        <div class="pos-cat">Competidor</div>
+        <h3>Bancos Tradicionais</h3>
+        <ul class="pos-traits">
+          <li>Sites institucionais e pesados</li>
+          <li>Câmbio como serviço secundário</li>
+          <li>Linguagem burocrática</li>
+          <li>UX complexa</li>
+          <li>Sem especialização</li>
+        </ul>
+        <div class="pos-badge">Confiáveis — mas distantes</div>
+      </div>
+
+      <div class="pos-card highlight reveal d1">
+        <div class="pos-cat">A nossa posição</div>
+        <h3>Unicâmbio</h3>
+        <p class="pos-tagline">Especialistas. Humanos. Digitais.</p>
+        <ul class="pos-traits">
+          <li>Especialistas em câmbio manual</li>
+          <li>33 anos de reputação inigualável</li>
+          <li>Atendimento humano diferenciado</li>
+          <li>Presença física em 82+ balcões</li>
+          <li>Design premium e acessível</li>
+        </ul>
+        <div class="pos-badge">O melhor dos dois mundos</div>
+      </div>
+
+      <div class="pos-card reveal d2">
+        <div class="pos-cat">Competidor</div>
+        <h3>Fintechs Digitais</h3>
+        <ul class="pos-traits">
+          <li>Revolut, Wise — design forte</li>
+          <li>Mobile-first absoluto</li>
+          <li>Sem atendimento humano</li>
+          <li>Sem presença física</li>
+          <li>Relação fria, transacional</li>
+        </ul>
+        <div class="pos-badge">Modernos — mas sem calor</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── 4.5. BATTLEFIELD ── -->
+<section id="battlefield" class="grain">
+  <div class="btl-ambient"></div>
+  <div class="container">
+    <div class="label-tag reveal">Arena Competitiva</div>
+    <h2 class="reveal d1">Três marcas no mesmo mercado.<br>Apenas uma combina <em>tudo.</em></h2>
+    <p class="btl-sub reveal d2">RealTransfer, Revolut e Wise definem padrões em segmentos distintos. Mas nenhuma reúne a especialização, a presença física e a reputação que a Unicâmbio construiu em 33 anos.</p>
+
+    <!-- COMPETITORS -->
+    <div class="btl-competitors">
+      <div class="btl-cmp-wrap reveal">
+        <div class="btl-cmp-label"><span>RealTransfer</span></div>
+        <div class="btl-cmp-browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">realtransfer.pt</div>
+          </div>
+          <img src="img/Real1.png" alt="RealTransfer" loading="lazy">
+        </div>
+      </div>
+      <div class="btl-cmp-wrap reveal d1">
+        <div class="btl-cmp-label"><span>Revolut</span></div>
+        <div class="btl-cmp-browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">revolut.com</div>
+          </div>
+          <img src="img/Revolut1.png" alt="Revolut" loading="lazy">
+        </div>
+      </div>
+      <div class="btl-cmp-wrap reveal d2">
+        <div class="btl-cmp-label"><span>Wise</span></div>
+        <div class="btl-cmp-browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">wise.com</div>
+          </div>
+          <img src="img/Wise1.png" alt="Wise" loading="lazy">
+        </div>
+      </div>
+    </div>
+
+    <!-- VS -->
+    <div class="btl-vs-row reveal">
+      <div class="btl-vs-line"></div>
+      <div class="btl-vs-badge">
+        <div class="dot"></div>
+        <span>A Unicâmbio responde</span>
+      </div>
+      <div class="btl-vs-line r"></div>
+    </div>
+
+    <!-- UNICÂMBIO HERO -->
+    <div class="btl-hero-wrap reveal d1">
+      <div class="btl-hero-glow"></div>
+      <div class="btl-hero-browser">
+        <div class="btl-hero-bar">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="btl-hero-url">unicambio.com.br · 2026</div>
+        </div>
+        <img src="img/PrincipalN1.png" alt="Unicâmbio — novo site" loading="lazy">
+      </div>
+      <div class="btl-crown">Câmbio Manual #1 em Portugal · 33 anos de liderança</div>
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <div class="btl-table-wrap reveal">
+      <table class="btl-table">
+        <thead>
+          <tr>
+            <th>Critério</th>
+            <th class="th-uni">Unicâmbio</th>
+            <th>RealTransfer</th>
+            <th>Revolut</th>
+            <th>Wise</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Presença física</td>
+            <td class="td-uni"><span class="ic-yes">✓</span>82+ balcões em Portugal</td>
+            <td><span class="ic-maybe">~</span>38 balcões</td>
+            <td><span class="ic-no">✗</span>100% digital</td>
+            <td><span class="ic-no">✗</span>100% digital</td>
+          </tr>
+          <tr>
+            <td>Parceiro de remessas</td>
+            <td class="td-uni"><span class="ic-yes">✓</span>Western Union</td>
+            <td><span class="ic-maybe">~</span>MoneyGram</td>
+            <td><span class="ic-no">✗</span>Rede própria</td>
+            <td><span class="ic-no">✗</span>Rede própria</td>
+          </tr>
+          <tr>
+            <td>Especialização em câmbio</td>
+            <td class="td-uni"><span class="ic-yes">✓</span>Especialistas em câmbio</td>
+            <td><span class="ic-maybe">~</span>Câmbio + outros</td>
+            <td><span class="ic-no">✗</span>Multi-serviço fintech</td>
+            <td><span class="ic-no">✗</span>Multi-serviço fintech</td>
+          </tr>
+          <tr>
+            <td>Atendimento humano</td>
+            <td class="td-uni"><span class="ic-yes">✓</span>Presencial + digital</td>
+            <td><span class="ic-yes">✓</span>Presencial + digital</td>
+            <td><span class="ic-no">✗</span>Chatbot apenas</td>
+            <td><span class="ic-no">✗</span>Chatbot apenas</td>
+          </tr>
+          <tr>
+            <td>Anos de mercado</td>
+            <td class="td-uni"><span class="ic-yes">✓</span>33 anos de reputação</td>
+            <td>18 anos</td>
+            <td>11 anos</td>
+            <td>~15 anos</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 5. REVEAL ── -->
+<section id="reveal-novo">
+  <div class="bg">
+    <img src="img/PrincipalN1.png" alt="Novo site Unicâmbio" loading="lazy">
+  </div>
+  <div class="overlay"></div>
+  <div class="container content">
+    <div class="label-tag reveal" style="color:var(--y);">A solução</div>
+    <h2 class="reveal d1">O mercado reconhece líderes.<br><em style="color:var(--y);font-style:normal;">O digital também.</em></h2>
+  </div>
+</section>
+
+<!-- ── 6. COMPARAÇÃO ── -->
+<section id="comparacao">
+  <div class="container">
+    <div class="label-tag reveal" style="color:var(--g);">Antes vs. Depois</div>
+    <h2 class="reveal d1">33 anos de história.<br>Uma nova forma de a contar.</h2>
+    <div class="cmp-cols">
+      <div class="reveal">
+        <div class="cmp-col-pill old"><div class="dot"></div>Antes</div>
+        <div class="cmp-browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">unicambio.com.br · 2024</div>
+          </div>
+          <div class="browser-img">
+            <img src="img/PrincipalA1.png" alt="Site antigo" loading="lazy">
+          </div>
+        </div>
+        <ul class="cmp-bullets old">
+          <li><span class="ico">✕</span>Visual sem hierarquia clara</li>
+          <li><span class="ico">✕</span>Nenhuma âncora emocional</li>
+          <li><span class="ico">✕</span>CTA perdido no meio da página</li>
+          <li><span class="ico">✕</span>Sem diferenciais evidentes</li>
+          <li><span class="ico">✕</span>Identidade de marca fraca</li>
+        </ul>
+      </div>
+      <div class="reveal d2">
+        <div class="cmp-col-pill novo"><div class="dot"></div>Depois</div>
+        <div class="cmp-browser novo-browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">unicambio.com.br · 2026</div>
+          </div>
+          <div class="browser-img">
+            <img src="img/PrincipalN1.png" alt="Site novo" loading="lazy">
+          </div>
+        </div>
+        <ul class="cmp-bullets novo">
+          <li><span class="ico">✓</span>Hero impactante com proposta clara</li>
+          <li><span class="ico">✓</span>Amarelo da marca como protagonista</li>
+          <li><span class="ico">✓</span>Fluxo guiado até à conversão</li>
+          <li><span class="ico">✓</span>Diferenciais explícitos e credíveis</li>
+          <li><span class="ico">✓</span>Tom de liderança em cada detalhe</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 7. UNIMONEY ── -->
+<section id="unimoney" class="grain">
+  <div class="container">
+
+    <!-- hero: texto + produto SVG -->
+    <div class="uni-hero">
+      <div class="uni-hero-text reveal">
+        <div class="label-tag" style="color:var(--y);">UniMoney · Cartão Visa</div>
+        <h2>O cartão que vai<br>tão longe<br><em>quanto tu.</em></h2>
+        <p>O UniMoney merecia um palco à altura. O novo site coloca-o no centro — com identidade visual própria, uma experiência que converte e uma presença que nenhum concorrente tem.</p>
+      </div>
+      <div class="uni-hero-visual reveal d2">
+        <div class="card-stage">
+          <div class="card-glow-ring"></div>
+          <div class="coin coin-1"></div>
+          <div class="coin coin-2"></div>
+          <div class="coin coin-3"></div>
+          <div class="coin coin-4"></div>
+          <div class="coin coin-5"></div>
+          <div class="card-deck" id="cdeck" data-fan="0">
+          <div class="uni-card"><img src="img/cartao.png" alt="Cartão Unimoney" onerror="this.closest('.uni-card').classList.add('no-img')"><div class="card-fallback"><div class="fb-u"></div><div class="fb-logo"><div class="fb-mark">U</div><span class="fb-name-text">unimoney</span></div><div class="fb-nfc"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg></div><div class="fb-chip"></div><div class="fb-visa">VISA</div></div></div>
+          <div class="uni-card"><img src="img/cartao.png" alt="Cartão Unimoney" onerror="this.closest('.uni-card').classList.add('no-img')"><div class="card-fallback"><div class="fb-u"></div><div class="fb-logo"><div class="fb-mark">U</div><span class="fb-name-text">unimoney</span></div><div class="fb-nfc"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg></div><div class="fb-chip"></div><div class="fb-visa">VISA</div></div></div>
+          <div class="uni-card"><img src="img/cartao.png" alt="Cartão Unimoney" onerror="this.closest('.uni-card').classList.add('no-img')"><div class="card-fallback"><div class="fb-u"></div><div class="fb-logo"><div class="fb-mark">U</div><span class="fb-name-text">unimoney</span></div><div class="fb-nfc"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg></div><div class="fb-chip"></div><div class="fb-visa">VISA</div></div></div>
+          <div class="uni-card"><img src="img/cartao.png" alt="Cartão Unimoney" onerror="this.closest('.uni-card').classList.add('no-img')"><div class="card-fallback"><div class="fb-u"></div><div class="fb-logo"><div class="fb-mark">U</div><span class="fb-name-text">unimoney</span></div><div class="fb-nfc"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg></div><div class="fb-chip"></div><div class="fb-visa">VISA</div></div></div>
+          <div class="uni-card"><img src="img/cartao.png" alt="Cartão Unimoney" onerror="this.closest('.uni-card').classList.add('no-img')"><div class="card-fallback"><div class="fb-u"></div><div class="fb-logo"><div class="fb-mark">U</div><span class="fb-name-text">unimoney</span></div><div class="fb-nfc"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg></div><div class="fb-chip"></div><div class="fb-visa">VISA</div></div></div>
+          <div class="uni-card"><img src="img/cartao.png" alt="Cartão Unimoney" onerror="this.closest('.uni-card').classList.add('no-img')"><div class="card-fallback"><div class="fb-u"></div><div class="fb-logo"><div class="fb-mark">U</div><span class="fb-name-text">unimoney</span></div><div class="fb-nfc"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg></div><div class="fb-chip"></div><div class="fb-visa">VISA</div></div></div>
+          <div class="uni-card"><img src="img/cartao.png" alt="Cartão Unimoney" onerror="this.closest('.uni-card').classList.add('no-img')"><div class="card-fallback"><div class="fb-u"></div><div class="fb-logo"><div class="fb-mark">U</div><span class="fb-name-text">unimoney</span></div><div class="fb-nfc"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg></div><div class="fb-chip"></div><div class="fb-visa">VISA</div></div></div>
+          <div class="uni-card" id="cfront"><img src="img/cartao.png" alt="Cartão Unimoney" onerror="this.closest('.uni-card').classList.add('no-img')"><div class="card-fallback"><div class="fb-u"></div><div class="fb-logo"><div class="fb-mark">U</div><span class="fb-name-text">unimoney</span></div><div class="fb-nfc"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg></div><div class="fb-chip"></div><div class="fb-visa">VISA</div></div><div class="c-glare"></div></div>
+        </div>
+        </div><!-- /card-stage -->
+      </div>
+    </div>
+
+    <!-- galeria do novo site -->
+    <div class="uni-gallery-label reveal">
+      <span>Novo Site · UniMoney</span>
+      <div class="gl-line"></div>
+    </div>
+    <div class="uni-grid reveal d1">
+      <div class="uni-grid-item featured">
+        <img src="img/Novo12.png" alt="UniMoney — novo site" loading="lazy">
+      </div>
+      <div class="uni-grid-item">
+        <img src="img/Novo13.png" alt="UniMoney — novo site" loading="lazy">
+      </div>
+      <div class="uni-grid-item">
+        <img src="img/Novo14.png" alt="UniMoney — novo site" loading="lazy">
+      </div>
+      <div class="uni-grid-item">
+        <img src="img/Novo15.png" alt="UniMoney — novo site" loading="lazy">
+      </div>
+      <div class="uni-grid-item">
+        <img src="img/Novo16.png" alt="UniMoney — novo site" loading="lazy">
+      </div>
+    </div>
+
+    <!-- comparação antigo vs novo -->
+    <div class="uni-compare">
+      <div class="uni-cmp-col old-col reveal">
+        <div class="uni-cmp-pill old">Site Anterior</div>
+        <div class="uni-cmp-frame old-f">
+          <img src="img/UnimoneyA1.png" alt="UniMoney — site anterior" loading="lazy">
+        </div>
+        <p class="uni-caption">O produto existia — mas não tinha presença visual nem identidade própria na página.</p>
+      </div>
+      <div class="uni-cmp-col novo-col reveal d2">
+        <div class="uni-cmp-pill novo">Site Novo</div>
+        <div class="uni-cmp-frame novo-f">
+          <img src="img/UnimoneyN1.png" alt="UniMoney — site novo" loading="lazy">
+        </div>
+        <p class="uni-caption">Secção dedicada, design de produto premium e fluxo directo de conversão.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 8. MOBILE ── -->
+<section id="mobile" class="grain">
+  <div class="container">
+    <div class="label-tag reveal">Experiência Mobile</div>
+    <h2 class="reveal d1">O utilizador decide<br>no telemóvel.<br>Agora estamos prontos.</h2>
+    <div class="mob-layout">
+      <div class="mob-phones reveal d1">
+        <div class="phone-wrap">
+          <div class="phone-pill old">Antes</div>
+          <div class="phone-frame old-f">
+            <img src="img/AntigoMobile.jpeg" alt="Site antigo mobile" loading="lazy">
+          </div>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone-pill novo">Depois</div>
+          <div class="phone-frame novo-f">
+            <img src="img/NovoMobile.jpeg" alt="Site novo mobile" loading="lazy">
+          </div>
+        </div>
+      </div>
+      <div class="mob-content">
+        <div class="mob-stat-card reveal d2">
+          <div class="n">+60%</div>
+          <div class="l">Tráfego mobile</div>
+          <div class="d">dos acessos ao site ocorre por dispositivos móveis. O site antigo não estava à altura.</div>
+        </div>
+        <div class="mob-stat-card reveal d3">
+          <div class="n">Mobile-first</div>
+          <div class="l">Filosofia de design</div>
+          <div class="d">O novo site foi concebido para o polegar — cada secção, cada botão, cada fluxo.</div>
+        </div>
+        <div class="mob-stat-card reveal d4">
+          <div class="n">= Desktop</div>
+          <div class="l">Experiência garantida</div>
+          <div class="d">Pela primeira vez, o utilizador mobile tem a mesma experiência premium que no desktop.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 8. COMPARAÇÃO EXPANDIDA ── -->
+<section id="sistema">
+  <div class="container">
+    <div class="label-tag reveal" style="color:var(--g);">Página a página</div>
+    <h2 class="reveal d1">A mesma empresa.<br>Dois mundos diferentes.</h2>
+    <p class="sis-sub reveal d2">Cada secção do site foi repensada — não apenas redesenhada. Veja a diferença em detalhe.</p>
+
+    <div class="cmp-header reveal d3">
+      <span class="cmp-header-label old">Site Antigo</span>
+      <span class="cmp-header-label novo">Site Novo</span>
+    </div>
+
+    <div class="cmp-page-label reveal">Página Principal · Homepage</div>
+    <div class="cmp-row reveal"><div class="cmp-shot old-shot"><img src="img/PrincipalA1.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/PrincipalN1.png" loading="lazy"></div></div>
+
+    <div class="cmp-page-label reveal">Reserva de Moeda Estrangeira</div>
+    <div class="cmp-row reveal"><div class="cmp-shot old-shot"><img src="img/ReservaA1.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/ReservaN1.png" loading="lazy"></div></div>
+    <div class="cmp-row reveal d1"><div class="cmp-shot old-shot"><img src="img/ReservaA2.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/ReservaN2.png" loading="lazy"></div></div>
+    <div class="cmp-row reveal d2"><div class="cmp-shot old-shot"><img src="img/ReservaA3.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/ReservaN3.png" loading="lazy"></div></div>
+
+    <div class="cmp-page-label reveal">Compra de Ouro</div>
+    <div class="cmp-row reveal"><div class="cmp-shot old-shot"><img src="img/OuroA1.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/OuroN1.png" loading="lazy"></div></div>
+    <div class="cmp-row reveal d1"><div class="cmp-shot old-shot"><img src="img/OuroA2.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/OuroN2.png" loading="lazy"></div></div>
+    <div class="cmp-row reveal d2"><div class="cmp-shot old-shot"><img src="img/OuroA3.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/OuroN3.png" loading="lazy"></div></div>
+
+    <div class="cmp-page-label reveal">Western Union</div>
+    <div class="cmp-row reveal"><div class="cmp-shot old-shot"><img src="img/WuA1.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/WuN1.png" loading="lazy"></div></div>
+    <div class="cmp-row reveal d1"><div class="cmp-shot old-shot"><img src="img/WuA2.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/WuN2.png" loading="lazy"></div></div>
+
+    <div class="cmp-page-label reveal">Balcões · Localizações</div>
+    <div class="cmp-row reveal"><div class="cmp-shot old-shot"><img src="img/BalcaoA1.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/BalcaoN1.png" loading="lazy"></div></div>
+    <div class="cmp-row reveal d1"><div class="cmp-shot old-shot"><img src="img/BalcaoA2.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/BalcaoN2.png" loading="lazy"></div></div>
+
+    <div class="cmp-page-label reveal">Soluções para Empresas</div>
+    <div class="cmp-row reveal"><div class="cmp-shot old-shot"><img src="img/EmpresasA1.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/EmpresasN1.png" loading="lazy"></div></div>
+    <div class="cmp-row reveal d1"><div class="cmp-shot old-shot"><img src="img/EmpresasA2.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/EmpresasN2.png" loading="lazy"></div></div>
+
+    <div class="cmp-page-label reveal">Sobre Nós · A Nossa História</div>
+    <div class="cmp-row reveal"><div class="cmp-shot old-shot"><img src="img/SomosA1.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/SomosN1.png" loading="lazy"></div></div>
+    <div class="cmp-row reveal d1"><div class="cmp-shot old-shot"><img src="img/SomosA2.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/SomosN2.png" loading="lazy"></div></div>
+    <div class="cmp-row reveal d2"><div class="cmp-shot old-shot"><img src="img/SomosA3.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/SomosN3.png" loading="lazy"></div></div>
+
+    <div class="cmp-page-label reveal">Blog · Conteúdo</div>
+    <div class="cmp-row reveal"><div class="cmp-shot old-shot"><img src="img/BlogA1.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/BlogN1.png" loading="lazy"></div></div>
+    <div class="cmp-row reveal d1"><div class="cmp-shot old-shot"><img src="img/BlogA2.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/BlogN2.png" loading="lazy"></div></div>
+
+    <div class="cmp-page-label reveal">Contactos</div>
+    <div class="cmp-row reveal"><div class="cmp-shot old-shot"><img src="img/ContatosA1.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/ContatosN1.png" loading="lazy"></div></div>
+    <div class="cmp-row reveal d1"><div class="cmp-shot old-shot"><img src="img/ContatosA2.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/ContatosN2.png" loading="lazy"></div></div>
+
+    <div class="cmp-page-label reveal">Rodapé</div>
+    <div class="cmp-row reveal"><div class="cmp-shot old-shot"><img src="img/FooterA1.png" loading="lazy"></div><div class="cmp-shot novo-shot"><img src="img/FooterN2.png" loading="lazy"></div></div>
+
+    <div class="cmp-divider reveal">
+      <div class="cmp-divider-line"></div>
+      <span class="cmp-divider-label">Experiência Mobile</span>
+      <div class="cmp-divider-line"></div>
+    </div>
+
+    <div class="cmp-header reveal">
+      <span class="cmp-header-label old">Mobile Antigo</span>
+      <span class="cmp-header-label novo">Mobile Novo</span>
+    </div>
+    <div class="cmp-row reveal d1">
+      <div class="cmp-phone-pair">
+        <div class="cmp-phone old-phone"><img src="img/AntigoMobile11.jpeg" loading="lazy"></div>
+        <div class="cmp-phone old-phone"><img src="img/AntigoMobile1.jpeg" loading="lazy"></div>
+      </div>
+      <div class="cmp-phone-pair">
+        <div class="cmp-phone novo-phone"><img src="img/NovoMobile8.jpeg" loading="lazy"></div>
+        <div class="cmp-phone novo-phone"><img src="img/NovoMobile1.jpeg" loading="lazy"></div>
+      </div>
+    </div>
+    <div class="cmp-row reveal d2">
+      <div class="cmp-phone-pair">
+        <div class="cmp-phone old-phone"><img src="img/AntigoMobile2.jpeg" loading="lazy"></div>
+        <div class="cmp-phone old-phone"><img src="img/AntigoMobile3.jpeg" loading="lazy"></div>
+      </div>
+      <div class="cmp-phone-pair">
+        <div class="cmp-phone novo-phone"><img src="img/NovoMobile2.jpeg" loading="lazy"></div>
+        <div class="cmp-phone novo-phone"><img src="img/NovoMobile4.jpeg" loading="lazy"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 10. IMPACTO ── -->
+<section id="impacto">
+  <div class="container">
+    <div class="label-tag reveal" style="color:var(--g);">Impacto Esperado</div>
+    <h2 class="reveal d1">O que acontece quando o site finalmente<br>trabalha em conjunto com a equipa.</h2>
+    <div class="impact-grid">
+      <div class="impact-card reveal">
+        <div class="impact-label">Envolvimento estimado</div>
+        <div class="impact-metric">+40%</div>
+        <p>Sites com design moderno e UX optimizada geram mais tempo de navegação e menos abandono no primeiro acesso.</p>
+      </div>
+      <div class="impact-card reveal d1">
+        <div class="impact-label">Leads qualificados</div>
+        <div class="impact-metric">×3</div>
+        <p>Quando o fluxo de contacto é claro e a confiança é transmitida visualmente, mais visitantes tornam-se prospects reais.</p>
+      </div>
+      <div class="impact-card reveal d2">
+        <div class="impact-label">Anos comunicados</div>
+        <div class="impact-metric">33</div>
+        <p>Pela primeira vez, a história e a liderança da Unicâmbio são visíveis logo no primeiro scroll — construindo autoridade instantânea.</p>
+      </div>
+    </div>
+    <div class="impact-note reveal d3">
+      <p>"O melhor momento para actualizar o site<br>foi há cinco anos. O segundo melhor<br>momento é <em>agora.</em>"</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 11. PEDIDO ── -->
+<section id="pedido" class="grain">
+  <div class="pedido-grid-bg"></div>
+  <div class="pedido-glow"></div>
+  <div class="container">
+    <div class="label-tag reveal">Conclusão</div>
+    <h2 class="reveal d1">
+      A reputação<br>já existe.<br><em>Agora vê-se.</em>
+    </h2>
+    <p class="ped-sub reveal d2">
+      Trinta e três anos de confiança construída cliente a cliente, operação a operação. O novo site não cria essa história — honra-a. Pela primeira vez, quem chega à Unicâmbio pela primeira vez sente, em segundos, o peso e a seriedade de tudo o que foi construído. Esse é o verdadeiro valor de um site que está à altura da empresa.
+    </p>
+    <div class="ped-divider"></div>
+    <div class="ped-stats reveal d3">
+      <div class="ped-stat">
+        <div class="n">33 anos</div>
+        <div class="l">No mercado</div>
+      </div>
+      <div class="ped-stat">
+        <div class="n">#1</div>
+        <div class="l">Câmbio manual</div>
+      </div>
+      <div class="ped-stat">
+        <div class="n">Hoje</div>
+        <div class="l">O momento é agora</div>
+      </div>
+    </div>
+    <div class="ped-logo reveal d4">
+      <img src="img/unicambio_logo_fullhd.png" alt="Unicâmbio">
+      <span class="tagline">Liderança que agora se vê.</span>
+    </div>
+    <div class="ped-cta reveal d5">
+      <a href="https://unizz.vercel.app/" class="ped-btn" target="_blank" rel="noopener">
+        Ver o Novo Site
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+      </a>
+      <p class="ped-btn-sub">Abrir o site completo numa nova janela</p>
+    </div>
+    <div class="reveal d5" style="text-align:center;padding-top:48px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.18);">Design &amp; Desenvolvimento · Daniel Viana</div>
+  </div>
+</section>
+
+<script>
+const prog = document.getElementById('prog');
+const nav  = document.getElementById('nav');
+
+window.addEventListener('scroll', () => {
+  prog.style.width = (window.scrollY / (document.body.scrollHeight - innerHeight) * 100) + '%';
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* count-up + progress bars */
+function countUp(el) {
+  const target = +el.dataset.count;
+  const suffix = el.dataset.suffix || '';
+  const prefix = el.dataset.prefix || '';
+  const duration = 1600;
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = prefix + Math.round(ease * target) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+const statIO = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const stat = e.target;
+    const num = stat.querySelector('.n[data-count]');
+    const bar = stat.querySelector('.m-stat-bar-fill');
+    if (num) countUp(num);
+    if (bar) bar.style.width = bar.dataset.pct + '%';
+    statIO.unobserve(stat);
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.m-stat').forEach(el => statIO.observe(el));
+
+/* ── card fan animation (from index.html) ── */
+(function(){
+  const deck = document.getElementById('cdeck');
+  const front = document.getElementById('cfront');
+  if(!deck) return;
+  const cards = deck.querySelectorAll('.uni-card');
+  const N = cards.length;
+
+  function applyFan(fanned) {
+    const spread = 52;
+    const lift = 60;
+    cards.forEach((c, i) => {
+      const t = i / (N - 1);
+      if(fanned) {
+        const rot = -spread/2 + t * spread;
+        const tx = (t - 0.5) * 180;
+        const ty = -Math.abs(t - 0.5) * lift;
+        const sc = 0.78 + t * 0.04;
+        c.style.transform = `translateX(${tx}px) translateY(${ty}px) rotate(${rot}deg) scale(${sc})`;
+        c.style.opacity = i === N-1 ? '1' : String(0.35 + t * 0.5);
+        c.style.zIndex = String(i);
+        c.style.boxShadow = i === N-1 ? '0 30px 80px rgba(0,0,0,.8),0 0 60px rgba(255,208,0,.25)' : '0 8px 30px rgba(0,0,0,.5)';
+      } else {
+        const rot = (i - (N-1)) * 1.8;
+        const tx = (i - (N-1)) * 2;
+        const ty = -(N-1-i) * 2;
+        const sc = 1 - (N-1-i) * 0.025;
+        c.style.transform = i === N-1
+          ? 'translateX(0) translateY(-8px) rotate(-1.5deg) scale(1.02)'
+          : `translateX(${tx}px) translateY(${ty}px) rotate(${rot}deg) scale(${sc})`;
+        c.style.opacity = i === N-1 ? '1' : String(0.18 + i * 0.1);
+        c.style.zIndex = String(i);
+        c.style.boxShadow = i === N-1 ? '0 24px 60px rgba(0,0,0,.7),0 0 40px rgba(255,208,0,.18)' : 'none';
+      }
+    });
+  }
+
+  cards.forEach(c => {
+    c.style.transition = 'transform 1s cubic-bezier(.16,1,.3,1), opacity .8s ease, box-shadow .8s ease';
+    c.style.position = 'absolute';
+    c.style.inset = '0';
+  });
+
+  applyFan(false);
+
+  let fanned = false;
+  setInterval(() => { fanned = !fanned; applyFan(fanned); }, 3500);
+
+  deck.addEventListener('mouseenter', () => { applyFan(true); });
+  deck.addEventListener('mouseleave', () => { applyFan(false); });
+
+  let floatDir = 1, floatY = 0;
+  function floatTick() {
+    floatY += 0.04 * floatDir;
+    if(floatY > 8 || floatY < 0) floatDir *= -1;
+    if(front) front.style.marginTop = (-floatY) + 'px';
+    requestAnimationFrame(floatTick);
+  }
+  floatTick();
+})();
+</script>
+</body>
+</html>
