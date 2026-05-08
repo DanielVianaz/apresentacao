@@ -1196,15 +1196,7 @@ nav .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--y);animatio
   height:440px;width:auto;flex-shrink:0;
 }
 
-/* ── responsive ── */
-@media(max-width:960px){
-  .btl-competitors{grid-template-columns:1fr;}
-  .btl-table th:nth-child(3),.btl-table th:nth-child(4),.btl-table th:nth-child(5),
-  .btl-table td:nth-child(3),.btl-table td:nth-child(4),.btl-table td:nth-child(5){display:none;}
-  .btl-verdict-row{grid-template-columns:1fr;}
-}
-
-/* ── responsive ── */
+/* ── tablet (960px) ── */
 @media(max-width:960px){
   nav{padding:16px 24px;}
   nav.scrolled{padding:12px 24px;}
@@ -1219,6 +1211,100 @@ nav .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--y);animatio
   .hero-stats{flex-wrap:wrap;gap:24px;}
   .ped-stats{gap:32px;}
   .uni-top{flex-direction:column;align-items:flex-start;}
+  .btl-competitors{grid-template-columns:1fr;}
+  .btl-table th:nth-child(4),.btl-table th:nth-child(5),
+  .btl-table td:nth-child(4),.btl-table td:nth-child(5){display:none;}
+  .btl-verdict-row{grid-template-columns:1fr;}
+}
+
+/* ── mobile (768px) ── */
+@media(max-width:768px){
+  /* hero */
+  #hero{
+    grid-template-columns:1fr;
+    padding:120px 0 64px;
+    gap:48px;
+  }
+  .hero-left{padding:0 24px;}
+  .hero-right{padding:0 24px;display:none;}
+  #hero h1{font-size:clamp(42px,11vw,64px);margin-bottom:24px;}
+  .hero-desc{font-size:14px;margin-bottom:32px;}
+  .hero-stats{gap:20px;}
+  .hero-stat .n{font-size:28px;}
+  .scroll-cue{display:none;}
+
+  /* manifesto */
+  #manifesto{padding:64px 0;}
+  .manifesto-top{grid-template-columns:1fr;gap:28px;}
+  .manifesto-img-wrap{display:none;}
+  #manifesto .big{font-size:clamp(22px,5.5vw,32px);line-height:1.5;}
+  .manifesto-stats{grid-template-columns:1fr 1fr;}
+  .m-stat{padding:20px 0 !important;border-right:none !important;border-bottom:1px solid var(--ln);}
+
+  /* diagnóstico */
+  #diagnostico{padding:64px 0;}
+  #diagnostico h2{font-size:clamp(28px,8vw,44px);}
+  .prob-card{padding:24px;}
+
+  /* posicionamento */
+  #posicionamento{padding:64px 0;}
+  .pos-grid{grid-template-columns:1fr;gap:16px;}
+
+  /* battlefield */
+  #battlefield{padding:64px 0 48px;}
+  #battlefield h2{font-size:clamp(24px,7vw,38px);}
+  .btl-sub{font-size:14px;}
+  .btl-competitors{grid-template-columns:1fr;gap:24px;}
+  .btl-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .btl-table{min-width:420px;}
+  .btl-table th:nth-child(3),.btl-table td:nth-child(3){display:none;}
+  .btl-table th,.btl-table td{padding:14px 16px;font-size:13px;}
+
+  /* reveal novo */
+  #reveal-novo h2{font-size:clamp(28px,8vw,44px);}
+
+  /* comparação */
+  #comparacao{padding:64px 0;}
+  #comparacao h2{font-size:clamp(28px,8vw,44px);}
+  .cmp-cols{grid-template-columns:1fr;gap:40px;}
+
+  /* unimoney */
+  #unimoney{padding:64px 0;}
+  .uni-hero{flex-direction:column;gap:0;}
+  .uni-hero-text h2{font-size:clamp(32px,9vw,48px);}
+  .card-stage{height:320px;transform:scale(.75);transform-origin:center top;}
+  .uni-grid{grid-template-columns:1fr 1fr;}
+  .uni-grid-item.featured{grid-column:1/-1;}
+  .uni-compare{grid-template-columns:1fr;gap:32px;}
+
+  /* mobile section */
+  #mobile{padding:64px 0;}
+  #mobile h2{font-size:clamp(28px,8vw,44px);}
+  .mob-layout{grid-template-columns:1fr;}
+
+  /* sistema / página a página */
+  #sistema{padding:64px 0;}
+  #sistema h2{font-size:clamp(24px,7vw,36px);}
+  .cmp-row{grid-template-columns:1fr;gap:8px;}
+  .cmp-phone-pair{flex-direction:column;gap:12px;}
+  .cmp-header{grid-template-columns:1fr 1fr;}
+
+  /* impacto */
+  #impacto{padding:64px 0;}
+  .impact-grid{grid-template-columns:1fr;}
+
+  /* pedido */
+  #pedido{padding:80px 0 64px;}
+  #pedido h2{font-size:clamp(36px,10vw,56px);}
+  .ped-sub{font-size:15px;}
+  .ped-stats{flex-direction:column;gap:20px;}
+  .ped-btn{padding:16px 32px;font-size:15px;}
+
+  /* section headings geral */
+  h2{font-size:clamp(26px,7vw,40px) !important;}
+
+  /* animation desligada em mobile */
+  .hero-preview-wrap{animation:none !important;transform:none !important;}
 }
 </style>
 </head>
